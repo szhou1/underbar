@@ -160,18 +160,18 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function(collection, iterator, accumulator) {
-    var coll = collection.slice(0); // make a copy of collection as to not modify the input
 
-    if(accumulator === undefined){ // if accumulator is undefined, then set it to the first element
-      accumulator = collection[0];
-      coll = coll.splice(1);
-    }
-
-    _.each(coll, function(item){
-      accumulator = iterator(accumulator, item);
+    _.each(collection, function(memo, item){
+      if(accumulator === undefined){
+        accumulator = memo;
+      }else{
+        var r = iterator(accumulator, memo);
+        if(r !== undefined){
+          accumulator = r;
+        }
+      }
     });
     return accumulator;
-
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -190,12 +190,27 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(stillTrue, item){
+      if(stillTrue === false){
+        return false;
+      }else{
+        if(iterator === undefined){
+          return item ? true : false;
+        }
+        return iterator(item) ? true : false;
+      }
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || function(item) {return item;};
+
+    return !_.every(collection, function(item){
+      return !iterator(item);
+    });
   };
 
 
