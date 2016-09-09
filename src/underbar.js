@@ -99,13 +99,13 @@
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
-    var result = [];
+    var arr = [];
     _.each(array, function(item){
-      if(_.indexOf(result, item) == -1){
-        result.push(item);
+      if(_.indexOf(arr, item) === -1){
+        arr.push(item);
       }
     });
-    return result;
+    return arr;
   };
 
 
@@ -114,11 +114,11 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
-    var result = [];
+    var arr = [];
     _.each(collection, function(item){
-      result.push(iterator(item));
+      arr.push(iterator(item));
     });
-    return result;
+    return arr;
   };
 
   /*
@@ -233,29 +233,28 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    for(var i = 1; i<arguments.length; i++){
+    for(var i = 1; i < arguments.length; i++){
+      var arg = arguments[i];
 
-      var keys = Object.keys(arguments[i]);
-
-      for(var k = 0; k<keys.length; k++){
-        obj[keys[k]] = arguments[i][keys[k]];
-      }
+      _.each(arg, function(value, key){
+        obj[key] = value;
+      });
     }
     return obj;
+
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
-    for(var i = 1; i<arguments.length; i++){
+    for(var i = 1; i < arguments.length; i++){
+      var arg = arguments[i];
 
-      var keys = Object.keys(arguments[i]);
-
-      for(var k = 0; k<keys.length; k++){
-        if(obj[keys[k]] === undefined){
-          obj[keys[k]] = arguments[i][keys[k]];
+      _.each(arg, function(value, key){
+        if(!obj.hasOwnProperty(key)){
+          obj[key] = value;
         }
-      }
+      });
     }
     return obj;
   };
@@ -305,7 +304,7 @@
 
     return function(){
       var args = JSON.stringify(arguments);
-      if(memo[args]===undefined){
+      if(!memo.hasOwnProperty(args)){
         memo[args] = func.apply(this, arguments);
       }
       return memo[args];
